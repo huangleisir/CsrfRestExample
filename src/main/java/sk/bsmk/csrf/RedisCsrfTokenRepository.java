@@ -22,7 +22,7 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
 
     public static final String CSRF_HEADER_NAME = "X-CSRF-TOKEN";
 
-    private final Jedis tokenRepository = new Jedis("localhost");
+    private final Jedis tokenRepository = new Jedis("localhost", 8081);
 
     public RedisCsrfTokenRepository() {
         log.info("Creating {}", RedisCsrfTokenRepository.class.getSimpleName());

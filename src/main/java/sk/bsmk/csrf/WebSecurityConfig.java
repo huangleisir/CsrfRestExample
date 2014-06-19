@@ -19,25 +19,25 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  private MapCsrfTokenRepository tokenRepository;
+    @Autowired
+    private RedisCsrfTokenRepository tokenRepository;
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http
-        .httpBasic().and()
-        // use simple MapTokenRepository instead of default HttpSessionCsrfTokenRepository
-        .csrf().csrfTokenRepository(tokenRepository).and()
-        .authorizeRequests()
-        .antMatchers(HttpMethod.GET, "/info").permitAll()
-        .anyRequest().hasRole("USER");
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .httpBasic().and()
+                // use simple MapTokenRepository instead of default HttpSessionCsrfTokenRepository
+                .csrf().csrfTokenRepository(tokenRepository).and()
+                .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/info").permitAll()
+                .anyRequest().hasRole("USER");
+    }
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth
-        .inMemoryAuthentication()
-        .withUser("user").password("password").roles("USER");
-  }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .inMemoryAuthentication()
+                .withUser("user").password("password").roles("USER");
+    }
 
 }
