@@ -1,8 +1,8 @@
 CsrfRestExample
 ===============
-Example how to secure Spring Boot REST application against csrf without using session.
+Example how to secure multi-instance Spring Boot REST application against CSRF without using session.
 
-TokenRepository is implemented as Map and Spring security is instructed to use this TokenRepository
+Anti-CSRF tokens are stored in a Redis database to support multiple instances of the application. Spring security is instructed to use this TokenRepository
  instead of default HttpSessionCsrfTokenRepository.
 
 GET /info
