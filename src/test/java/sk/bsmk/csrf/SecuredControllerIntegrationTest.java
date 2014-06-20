@@ -30,9 +30,7 @@ public class SecuredControllerIntegrationTest {
 
     private RedisServer redisServer;
 
-    // template with no credentials
     private static final RestTemplate anonymous = new TestRestTemplate();
-    // template with registered user
     private static final RestTemplate user = new TestRestTemplate("user", "password");
 
     @Before
@@ -65,7 +63,6 @@ public class SecuredControllerIntegrationTest {
         ResponseEntity<String> response = user.getForEntity(URL + "login", String.class);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertThat(response.getBody(), is(SecuredController.LOGGED_MESSAGE));
-        // constant from private static final HttpSessionCsrfTokenRepository.DEFAULT_CSRF_HEADER_NAME
         assertThat(response.getHeaders(), Matchers.hasKey(RedisCsrfTokenRepository.CSRF_HEADER_NAME));
     }
 
@@ -83,18 +80,14 @@ public class SecuredControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void thatUpdateInfoIsInaccessibleWithCsrfTokenAndNoCredentials() {
-        // first user has to login
-        ResponseEntity<String> loginResponse = user.getForEntity(URL + "login", String.class);
-        // obtain CSRF token from headers
+        ResponseEntity<String> loginResponse = anonymous.getForEntity(URL + "login", String.class);
         String csrfToken = loginResponse.getHeaders().getFirst(RedisCsrfTokenRepository.CSRF_HEADER_NAME);
 
-        // put csrfToken in headers
         HttpHeaders headers = new HttpHeaders();
         headers.add(RedisCsrfTokenRepository.CSRF_HEADER_NAME, csrfToken);
 
-        // put new string as resource
         final String newInfo = "Some new info with csrf";
-        // put as anonymous user
+
         ResponseEntity<String> response = anonymous.exchange(URL + "info", HttpMethod.PUT, new HttpEntity<>(newInfo, headers), String.class);
         assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 
@@ -104,18 +97,13 @@ public class SecuredControllerIntegrationTest {
 
     @Test
     @DirtiesContext
-    @Ignore // TODO Check why 403 is happening here with no exceptions in log.
     public void thatUpdateInfoIsAccessibleWithCsrfTokenAndCredentials() {
-        // first user has to login
         ResponseEntity<String> loginResponse = user.getForEntity(URL + "login", String.class);
-        // obtain CSRF token from headers
         String csrfToken = loginResponse.getHeaders().getFirst(RedisCsrfTokenRepository.CSRF_HEADER_NAME);
 
-        // put csrfToken in headers
         HttpHeaders headers = new HttpHeaders();
         headers.add(RedisCsrfTokenRepository.CSRF_HEADER_NAME, csrfToken);
 
-        // put new string as resource
         final String newInfo = "Some new info with csrf";
         ResponseEntity<String> response = user.exchange(URL + "info", HttpMethod.PUT, new HttpEntity<>(newInfo, headers), String.class);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
