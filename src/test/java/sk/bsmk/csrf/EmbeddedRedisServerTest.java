@@ -22,7 +22,7 @@ public class EmbeddedRedisServerTest {
     }
 
     @Test
-    public void thatRedissonCanRetrieveMapFromEmbeddedServer() throws Exception {
+    public void thatJedisCanAccessEmbeddedServer() throws Exception {
         RedisServer redisServer = new RedisServer(6379);
         redisServer.start();
         Jedis jedis = new Jedis("localhost", 6379);
