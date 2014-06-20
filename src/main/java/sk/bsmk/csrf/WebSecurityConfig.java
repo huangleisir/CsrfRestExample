@@ -10,9 +10,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-/**
- * Created by bsmk on 4/27/14.
- */
 @ComponentScan
 @EnableAutoConfiguration
 @EnableWebSecurity
@@ -26,7 +23,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic().and()
-                // use simple MapTokenRepository instead of default HttpSessionCsrfTokenRepository
                 .csrf().csrfTokenRepository(tokenRepository).and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/info").permitAll()

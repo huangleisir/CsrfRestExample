@@ -1,17 +1,17 @@
 package sk.bsmk.csrf;
 
+import org.redisson.Redisson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.stereotype.Component;
-import org.springframework.util.SerializationUtils;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class RedisCsrfTokenRepository implements CsrfTokenRepository {
@@ -22,7 +22,7 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
 
     public static final String CSRF_HEADER_NAME = "X-CSRF-TOKEN";
 
-    private final Jedis tokenRepository = new Jedis("localhost", 8081);
+    ConcurrentMap<String, CsrfToken> tokenRepository = Redisson.create().getMap("antiCsrfTokens");
 
     public RedisCsrfTokenRepository() {
         log.info("Creating {}", RedisCsrfTokenRepository.class.getSimpleName());
@@ -40,22 +40,16 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
             return;
 
         if (token == null) {
-            tokenRepository.del(key);
+            tokenRepository.remove(key);
         } else {
-            tokenRepository.set(key, SerializationUtils.serialize(token).toString());
+            tokenRepository.put(key, token);
         }
     }
 
     @Override
     public CsrfToken loadToken(HttpServletRequest request) {
         String key = getKey(request);
-        if (key != null) {
-            String tokenString = tokenRepository.get(key);
-            if (tokenString != null) {
-                return (CsrfToken) SerializationUtils.deserialize(tokenString.getBytes());
-            }
-        }
-        return null;
+        return key == null ? null : tokenRepository.get(key);
     }
 
     private String getKey(HttpServletRequest request) {
