@@ -22,7 +22,7 @@ repositories {
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-security'
-    compile 'org.redisson:redisson:1.1.1'
+    compile 'redis.clients:jedis:2.5.1'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'redis.embedded:embedded-redis:0.2'

@@ -1,7 +1,8 @@
 package sk.bsmk.csrf;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.redisson.Redisson;
+import redis.clients.jedis.Jedis;
 import redis.embedded.RedisServer;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -26,9 +27,9 @@ public class EmbeddedRedisServerTest {
     public void thatRedissonCanRetrieveMapFromEmbeddedServer() throws Exception {
         RedisServer redisServer = new RedisServer(6379);
         redisServer.start();
-        Redisson redisson = Redisson.create();
-        assertThat(redisson.getMap("test"), is(notNullValue()));
-        redisson.shutdown();
+        Jedis jedis = new Jedis("localhost", 6379);
+        jedis.set("testKey", "testValue");
+        Assert.assertThat(jedis.get("testKey"), is("testValue"));
         redisServer.stop();
     }
 

@@ -1,17 +1,17 @@
 package sk.bsmk.csrf;
 
-import org.redisson.Redisson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.stereotype.Component;
+import org.springframework.util.SerializationUtils;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class RedisCsrfTokenRepository implements CsrfTokenRepository {
@@ -22,7 +22,7 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
 
     public static final String CSRF_HEADER_NAME = "X-CSRF-TOKEN";
 
-    ConcurrentMap<String, CsrfToken> tokenRepository = Redisson.create().getMap("antiCsrfTokens");
+    private final Jedis tokenRepository = new Jedis("localhost", 6379);
 
     public RedisCsrfTokenRepository() {
         log.info("Creating {}", RedisCsrfTokenRepository.class.getSimpleName());
@@ -40,16 +40,22 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
             return;
 
         if (token == null) {
-            tokenRepository.remove(key);
+            tokenRepository.del(key.getBytes());
         } else {
-            tokenRepository.put(key, token);
+            tokenRepository.set(key.getBytes(), SerializationUtils.serialize(token));
         }
     }
 
     @Override
     public CsrfToken loadToken(HttpServletRequest request) {
         String key = getKey(request);
-        return key == null ? null : tokenRepository.get(key);
+        if (key != null) {
+            byte[] tokenString = tokenRepository.get(key.getBytes());
+            if (tokenString != null) {
+                return (CsrfToken) SerializationUtils.deserialize(tokenString);
+            }
+        }
+        return null;
     }
 
     private String getKey(HttpServletRequest request) {
