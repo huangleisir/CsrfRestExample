@@ -3,7 +3,6 @@ package sk.bsmk.csrf;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
@@ -71,7 +70,7 @@ public class SecuredControllerIntegrationTest {
     public void thatUpdateInfoIsInaccessibleWithoutCsrfToken() {
         ResponseEntity<String> putResponse = user.exchange(URL + "info", HttpMethod.PUT, null, String.class);
         assertThat(putResponse.getStatusCode(), is(HttpStatus.FORBIDDEN));
-        assertThat(putResponse.getBody(), containsString("Invalid CSRF Token"));
+        assertThat(putResponse.getBody(), containsString("Expected CSRF token not found"));
 
         ResponseEntity<String> infoResponse = anonymous.getForEntity(URL + "info", String.class);
         assertThat(infoResponse.getBody(), is(SecuredController.DEFAULT_INFO));
