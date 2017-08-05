@@ -1,3 +1,7 @@
+
+
+
+
 package sk.bsmk.csrf;
 
 import org.slf4j.Logger;
@@ -25,12 +29,14 @@ public class RedisCsrfTokenRepository implements CsrfTokenRepository {
     private final Jedis tokenRepository = new Jedis("localhost", 6379);
 
     public RedisCsrfTokenRepository() {
-        log.info("Creating {}", RedisCsrfTokenRepository.class.getSimpleName());
+        log.info("================================Creating {}", RedisCsrfTokenRepository.class.getSimpleName());
     }
 
     @Override
     public CsrfToken generateToken(HttpServletRequest request) {
-        return new DefaultCsrfToken(CSRF_HEADER_NAME, CSRF_PARAMETER_NAME, createNewToken());
+    	String newToken = createNewToken();
+    	 log.info("================================Creating new Token "+newToken);
+        return new DefaultCsrfToken(CSRF_HEADER_NAME, CSRF_PARAMETER_NAME, newToken);
     }
 
     @Override

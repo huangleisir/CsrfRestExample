@@ -1,12 +1,14 @@
 package sk.bsmk.csrf;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class SecuredController {
@@ -32,10 +34,18 @@ public class SecuredController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/info", method = RequestMethod.PUT)
+    @RequestMapping(value = "/info", method = RequestMethod.GET)
     public ResponseEntity<String> post(@RequestBody String newInfo) {
         info = newInfo;
         return new ResponseEntity<>("info updated", HttpStatus.OK);
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/logout")
+    public ResponseEntity<String> logout(HttpServletRequest  req) {
+    	HttpSession session =  req.getSession();
+    	session.invalidate();
+        return new ResponseEntity<>(info, HttpStatus.OK);
     }
 
 }
