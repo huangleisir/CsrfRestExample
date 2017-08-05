@@ -1,11 +1,8 @@
 /**
-<<<<<<< HEAD
-yuanduan
+yuanduan 555
 000 222 333
-=======
 yuanduan  333
 000 222 444
->>>>>>> refs/remotes/origin/master
 000 111
 */
   
