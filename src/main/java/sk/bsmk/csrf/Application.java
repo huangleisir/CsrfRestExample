@@ -6,7 +6,6 @@
  * 888
  */
 
-*/
 
 package sk.bsmk.csrf;
 //4
