@@ -12,7 +12,7 @@ unauthorized access to info resoucre
 GET /login
 ----------
 authorized resource that returns also csrf_token token in headers
-
+  
 PUT /info
 ---------
 authorized access to resource that can be accessed only with correct csrf_token
