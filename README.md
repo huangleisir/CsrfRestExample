@@ -4,7 +4,7 @@ Example how to secure scalable Spring Boot REST application against CSRF without
 
 Anti-CSRF tokens are stored in a Redis database to support multiple instances of the application. Spring security is instructed to use this TokenRepository
  instead of default HttpSessionCsrfTokenRepository.
-
+ 
 GET /info
 ---------
 unauthorized access to info resoucre
