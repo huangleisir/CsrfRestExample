@@ -1,4 +1,5 @@
-  CsrfRestExample
+ 888
+ CsrfRestExample
 ===============
 Example how to secure scalable Spring Boot REST application against CSRF without using session.
 
