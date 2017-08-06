@@ -27,3 +27,4 @@ RemoteSystemsTempFiles/
 .cproject
 .buildpath
 /.gradle/
+/README.md
